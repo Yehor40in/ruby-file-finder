@@ -22,7 +22,7 @@ module SF
                         end
                     end
                 end
-                break if @@filesystem.size > 3000
+                break if @@filesystem.size > 3000 #this is dumb, but good for now
             end
         end
 

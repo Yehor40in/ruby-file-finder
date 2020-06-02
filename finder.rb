@@ -3,7 +3,6 @@ module SF
     class Finder
 
         @@filesystem = Hash.new
-        @@restricted = ["var", "Photos Library.photoslibrary", "System", ".Trash", "Library", ".fseventsd", "Config.Msi", "System Volume Information", "WindowsApps", ".", ".."]
 
         def self.init_filesystem_fingerprint(start = "/")
 
@@ -12,13 +11,15 @@ module SF
                 temp = @@filesystem.clone
                 temp.each do |path, contents|
                     contents.each do |entry|
-                        dir = File.join(path, entry)
-                        unless @@filesystem.key? dir then
-                            unless @@restricted.include? entry then
+                        begin
+                            dir = File.join(path, entry)
+                            unless @@filesystem.key? dir then
                                 if File.directory?(dir) then
                                     @@filesystem[dir] = Dir.entries(dir)[2..-1]
                                 end
                             end
+                        rescue => exception
+                            puts "[!!] could not look into #{dir}"
                         end
                     end
                 end

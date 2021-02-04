@@ -2,7 +2,7 @@ class Finder
 
         @@filesystem = Hash.new
         @@restricted = [".", ".."]
-        @@last_fingerprint = []
+        @@last_matches = []
 
 
         def self.init_filesystem_fingerprint(start = "C:/")
@@ -32,12 +32,12 @@ class Finder
 
 
         def self.search_for_entries(keyword)
-            @@last_fingerprint = []
+            @@last_matches = []
             unless @@filesystem.empty? then
                 @@filesystem.each do |path, entries|
-                    @@last_fingerprint << path if path.include?(keyword) || path.match?(keyword)
+                    @@last_matches << path if path.include?(keyword) || path.match?(keyword)
                 end
-                return !@@last_fingerprint.empty?
+                return !@@last_matches.empty?
             end
 
         end
@@ -46,7 +46,7 @@ class Finder
         def self.findall(regexps)
             result = []
             regexps.each do |regexp| 
-                result.append( self.find regexp ) unless @@last_fingerprint.empty?
+                result.append( self.find regexp ) unless @@last_matches.empty?
             end
             return result
         end
@@ -54,7 +54,7 @@ class Finder
         def self.find(entry)
             self.init_filesystem_fingerprint
             if self.search_for_entries(entry) then
-                return @@last_fingerprint
+                return @@last_matches
             end
         end
 

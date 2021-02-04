@@ -50,7 +50,7 @@ class Finder
             end
             return result
         end
-        
+
         def self.find(entry)
             self.init_filesystem_fingerprint
             if self.search_for_entries(entry) then
@@ -60,4 +60,4 @@ class Finder
 
 
 
-    end
+end

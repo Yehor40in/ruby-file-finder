@@ -23,10 +23,6 @@ class Finder
                                     end
                                 end
                             rescue => exception
-                                #
-                                #   TODO:
-                                #   Imeplement logger
-                                #
                                 puts "[!!] could not look into #{dir}"
                             end
                         end
@@ -58,6 +54,7 @@ class Finder
             return result
         end
 
+                
         def self.find(entry)
             self.init_filesystem_fingerprint
             return self.search_for_entries(entry) ? @@last_matches : []

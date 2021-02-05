@@ -5,7 +5,7 @@ class Finder
         @@last_matches = []
 
 
-        def self.init_filesystem_fingerprint(start = nil)
+        def self.init_filesystem_fingerprint
             ["D:/", "C:/"].each do |start|
                 @@filesystem[start] = Dir.entries(start)
 

@@ -1,3 +1,12 @@
+=begin
+   
+   Universal file finder
+   Created by Yehor Sorokin
+   Feel free to use and play around this software
+
+=end
+
+
 class Finder
 
         @@filesystem = Hash.new

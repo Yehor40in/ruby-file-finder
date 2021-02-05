@@ -1,33 +1,40 @@
 class Finder
 
         @@filesystem = Hash.new
-        @@restricted = [".", ".."]
+        @@restricted = [".", "..", "Config.Msi", "WindowsApps", "System Volume Information"]
         @@last_matches = []
 
 
-        def self.init_filesystem_fingerprint(start = "C:/")
-            @@filesystem[start] = Dir.entries(start)
+        def self.init_filesystem_fingerprint(start = nil)
+            ["D:/", "C:/"].each do |start|
+                @@filesystem[start] = Dir.entries(start)
 
-            loop do
-                did_change = false
-                temp = @@filesystem.clone
-                temp.each do |path, contents|
-                    contents.each do |entry|
-                        begin
-                            dir = File.join(path, entry)
-                            unless @@filesystem.key?(dir) && @@restricted.include?(entry) then
-                                if File.directory?(dir) then
-                                    @@filesystem[dir] = Dir.entries(dir)[2..-1]
-                                    did_change = true
+                loop do
+                    did_change = false
+                    temp = @@filesystem.clone
+                    temp.each do |path, contents|
+                        contents.each do |entry|
+                            begin
+                                dir = File.join(path, entry)
+                                if !@@filesystem.key?(dir) && !@@restricted.include?(entry) then
+                                    if File.directory?(dir) then
+                                        @@filesystem[dir] = Dir.entries(dir)[2..-1]
+                                        did_change = true
+                                    end
                                 end
+                            rescue => exception
+                                #
+                                #   TODO:
+                                #   Imeplement logger
+                                #
+                                puts "[!!] could not look into #{dir}"
                             end
-                        rescue => exception
-                            puts "[!!] could not look into #{dir}"
                         end
                     end
+                    break unless did_change
                 end
-                break unless did_change
             end
+
         end
 
 
@@ -35,7 +42,7 @@ class Finder
             @@last_matches = []
             unless @@filesystem.empty? then
                 @@filesystem.each do |path, entries|
-                    @@last_matches << path if path.include?(keyword) || path.match?(keyword)
+                    entries.each {|entry| @@last_matches << File.join(path, entry) if entry.include?(keyword) || entry.match?(keyword) }
                 end
                 return !@@last_matches.empty?
             end
@@ -53,9 +60,7 @@ class Finder
 
         def self.find(entry)
             self.init_filesystem_fingerprint
-            if self.search_for_entries(entry) then
-                return @@last_matches
-            end
+            return self.search_for_entries(entry) ? @@last_matches : []
         end
 
 
